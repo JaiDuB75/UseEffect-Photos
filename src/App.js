@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import ListAlbums from "./ListAlbums";
+import ListPhotos from "./ListPhotos";
 
 function App() {
+  const [albums, setAlbums] = useState([]);
+  const [photos, setPhotos] = useState([]);
+  const [currentAlbum, setCurrentAlbum] = useState({});
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/albums")
+      .then((response) => response.json())
+      .then(setAlbums)
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (currentAlbum.id) {
+      fetch(
+        `https://jsonplaceholder.typicode.com/photos?albumId=${currentAlbum.id}`
+      )
+        .then((response) => response.json())
+        .then(setPhotos)
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [currentAlbum.id]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1>Hello</h1>
+      <ListAlbums albums={albums} setCurrentAlbum={setCurrentAlbum} />
+      <ListPhotos albums={currentAlbum} photos={photos} />
+    </>
   );
 }
 
